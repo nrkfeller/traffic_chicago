@@ -24,8 +24,6 @@ def publish_to_pubsub(publisher, topic_path):
 
     if last_update != data[0]['_last_updt']:
 
-        print('new batch')
-
         last_update = data[0]['_last_updt']
 
         for entry in data:
@@ -71,4 +69,4 @@ def start_publishing():
 
 if __name__ == '__main__':
 
-    app.run(host='127.0.0.1', port=8080, debug=True)
+    app.run(host='0.0.0.0', port=8080, debug=True)
