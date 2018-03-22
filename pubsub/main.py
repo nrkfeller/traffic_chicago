@@ -1,8 +1,15 @@
 import urllib
 import json
 import logging
-import time
 from google.cloud import pubsub
+
+from datetime import datetime
+from pytz import timezone
+
+from flask import Flask
+
+
+app = Flask(__name__)
 
 TRAFFIC_URL = 'https://data.cityofchicago.org/resource/8v9j-bter.json'
 TOPIC = 'chicago'
@@ -17,14 +24,14 @@ def publish_to_pubsub(publisher, topic_path):
 
     if last_update != data[0]['_last_updt']:
 
-        print 'new batch'
+        print('new batch')
 
         last_update = data[0]['_last_updt']
 
         for entry in data:
             publisher.publish(
                 topic_path,
-                data=entry['segmentid'].encode('utf-8'),
+                data=get_est_datetime(),
                 _direction=entry['_direction'].encode('utf-8'),
                 _fromst=entry['_fromst'].encode('utf-8'),
                 _last_updt=entry['_last_updt'].encode('utf-8'),
@@ -41,13 +48,15 @@ def publish_to_pubsub(publisher, topic_path):
             )
 
 
-def start_publishing(publisher, topic_path):
-    while True:
-        publish_to_pubsub(publisher, topic_path)
-        time.sleep(5)
+def get_est_datetime():
+    fmt = "%Y-%m-%d %H:%M:%S %Z%z"
+    now_time = datetime.now(timezone('US/Eastern'))
+    return now_time.strftime(fmt)
 
 
-if __name__ == '__main__':
+@app.route('/')
+def start_publishing():
+    print('get data')
     publisher = pubsub.PublisherClient()
     topic_path = publisher.topic_path('nickapi-184104', TOPIC)
     try:
@@ -56,4 +65,10 @@ if __name__ == '__main__':
     except:
         publisher.create_topic(topic_path)
         logging.info('Creating pub/sub topic {}'.format(TOPIC))
-    start_publishing(publisher, topic_path)
+    publish_to_pubsub(publisher, topic_path)
+    return 'done'
+
+
+if __name__ == '__main__':
+
+    app.run(host='127.0.0.1', port=8080, debug=True)
