@@ -1,0 +1,9 @@
+cron:
+- description: "GET traffic data into pubsubregions"
+  url: /runreg
+  schedule: every 5 minutes
+  target: pubsubregions
+- description: "GET traffic data into pubsubsegments"
+  url: /runseg
+  schedule: every 5 minutes
+  target: pubsubsegments
