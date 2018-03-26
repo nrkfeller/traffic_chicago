@@ -8,7 +8,8 @@ app = Flask(__name__)
 @app.route('/')
 def hello():
     """Return a friendly HTTP greeting."""
-    return render_template('index.html')
+    arr = [1, 2, 3]
+    return render_template('index.html', value=arr)
 
 
 @app.route('/architecture')
