@@ -4,9 +4,10 @@
     <!--Import Google Icon Font-->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <!--Import materialize.css-->
-    <!--Let browser know website is optimized for mobile-->
+    <!--https://pythonspot.com/flask-and-great-looking-charts-using-chart-js/-->
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/css/materialize.min.css">
+    <script src="static/js/Chart.min.js"></script>
     <title>Chicago Traffic</title>
   </head>
 
@@ -21,7 +22,88 @@
       </ul>
     </div>
   </nav>
-  <i class="material-icons">add</i>
+
+
+<!-- bar chart canvas element -->
+<div class="container">
+    <h1>Flask Chart.js</h1>
+
+    <div class="row">
+        <div class="col s6">
+          <div class="card orange darken-4">
+            <div class="card-content white-text">
+              <span class="card-title">Current Traffic</span>
+              <canvas id="chart" width="570" height="363"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <div class="col s6">
+          <div class="card orange darken-4">
+            <div class="card-content white-text">
+              <span class="card-title">Current Traffic</span>
+              <canvas id="chart" width="570" height="363"></canvas>
+            </div>
+          </div>
+        </div>
+    </div>
+</div>
+
+</div>
+
+<script>
+
+   // bar chart data
+   var barData = {
+   labels : [{% for item in labels %}
+                  "{{item}}",
+              {% endfor %}],
+   datasets : [
+      {
+            fillColor: "rgba(151,187,205,0.2)",
+            strokeColor: "rgba(151,187,205,1)",
+            pointColor: "rgba(151,187,205,1)",
+            pointStrokeColor: "#fff",
+            pointHighlightFill: "#fff",
+            pointHighlightStroke: "rgba(151,187,205,1)",
+            bezierCurve : false,
+            data : [{% for item in values %}
+                      {{item}},
+                    {% endfor %}]
+      }]
+   }
+
+    Chart.defaults.global.animationSteps = 50;
+    Chart.defaults.global.tooltipYPadding = 16;
+    Chart.defaults.global.tooltipCornerRadius = 0;
+    Chart.defaults.global.tooltipTitleFontStyle = "normal";
+    Chart.defaults.global.tooltipFillColor = "rgba(0,0,0,0.8)";
+    Chart.defaults.global.animationEasing = "easeOutBounce";
+    Chart.defaults.global.responsive = false;
+    Chart.defaults.global.scaleLineColor = "black";
+    Chart.defaults.global.scaleFontSize = 16;
+
+   // get bar chart canvas
+   var mychart = document.getElementById("chart").getContext("2d");
+
+   steps = 10
+   max = 10
+   // draw bar chart
+   var LineChartDemo = new Chart(mychart).Line(barData, {
+        scaleOverride: true,
+        scaleSteps: steps,
+        scaleStepWidth: Math.ceil(max / steps),
+        scaleStartValue: 0,
+        scaleShowVerticalLines: true,
+        scaleShowGridLines : true,
+        barShowStroke : true,
+        scaleShowLabels: true,
+        bezierCurve: false,
+
+   });
+
+
+</script>
 
 
 

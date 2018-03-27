@@ -21,7 +21,10 @@ def architecture():
 @app.route('/dashboard')
 def dashboard():
     """Return a friendly HTTP greeting."""
-    return render_template('dashboard.html')
+    labels = ["January", "February", "March",
+              "April", "May", "June", "July", "August"]
+    values = [10, 9, 8, 7, 6, 4, 7, 8]
+    return render_template('dashboard.html', values=values, labels=labels)
 
 
 @app.errorhandler(500)
