@@ -27,22 +27,15 @@ def publish_to_pubsub(publisher, topic_path):
         last_update = data[0]['_last_updt']
 
         for entry in data:
+            entry['_lif_lat'] = float(entry['_lif_lat'])
+            entry['start_lon'] = float(entry['start_lon'])
+            entry['_lit_lat'] = float(entry['_lit_lat'])
+            entry['_traffic'] = float(entry['_traffic'])
+            entry['_lit_lon'] = float(entry['_lit_lon'])
+            entry['_length'] = float(entry['_length'])
             publisher.publish(
                 topic_path,
-                data=get_est_datetime(),
-                _direction=entry['_direction'].encode('utf-8'),
-                _fromst=entry['_fromst'].encode('utf-8'),
-                _last_updt=entry['_last_updt'].encode('utf-8'),
-                _length=entry['_length'].encode('utf-8'),
-                _lif_lat=entry['_lif_lat'].encode('utf-8'),
-                _lit_lat=entry['_lit_lat'].encode('utf-8'),
-                _lit_lon=entry['_lit_lon'].encode('utf-8'),
-                _strheading=entry['_strheading'].encode('utf-8'),
-                _tost=entry['_tost'].encode('utf-8'),
-                _traffic=entry['_traffic'].encode('utf-8'),
-                segmentid=entry['segmentid'].encode('utf-8'),
-                start_lon=entry['start_lon'].encode('utf-8'),
-                street=entry['street'].encode('utf-8'),
+                data=json.dumps(entry)
             )
 
 
