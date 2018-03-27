@@ -27,18 +27,15 @@ def publish_to_pubsub(publisher, topic_path):
         last_update = data[0]['_last_updt']
 
         for entry in data:
+            entry['current_speed'] = float(entry['current_speed'])
+            entry['_east'] = float(entry['_east'])
+            entry['_region_id'] = int(entry['_region_id'])
+            entry['_north'] = float(entry['_north'])
+            entry['_south'] = float(entry['_south'])
+            entry['_west'] = float(entry['_west'])
             publisher.publish(
                 topic_path,
-                data=get_est_datetime(),
-                current_speed=entry['current_speed'].encode('utf-8'),
-                _east=entry['_east'].encode('utf-8'),
-                _last_updt=entry['_last_updt'].encode('utf-8'),
-                _region_id=entry['_region_id'].encode('utf-8'),
-                _north=entry['_north'].encode('utf-8'),
-                _south=entry['_south'].encode('utf-8'),
-                region=entry['region'].encode('utf-8'),
-                _west=entry['_west'].encode('utf-8'),
-                _description=entry['_description'].encode('utf-8')
+                data=json.dumps(entry)
             )
 
 
