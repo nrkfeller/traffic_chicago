@@ -9,8 +9,9 @@ app = Flask(__name__)
 
 @app.route('/gettingdata')
 def gettingdata():
-    BigQueryGetter.get_region_data()
-    BigQueryGetter.get_segment_data()
+    bqg = BigQueryGetter()
+    bqg.get_region_data()
+    bqg.get_segment_data()
     logging.info('Got data successfully')
     return 'success'
 

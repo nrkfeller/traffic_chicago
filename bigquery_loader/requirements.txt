@@ -1,0 +1,5 @@
+Flask==0.12.2
+google-cloud-storage==1.7.0
+gunicorn==19.7.1
+google-api-python-client
+google-cloud-bigquery==0.31.0
