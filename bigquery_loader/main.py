@@ -9,6 +9,7 @@ app = Flask(__name__)
 
 @app.route('/gettingdata')
 def gettingdata():
+    global SEGMENTS, REGIONS
     bqg = BigQueryGetter()
     bqg.get_region_data()
     bqg.get_segment_data()

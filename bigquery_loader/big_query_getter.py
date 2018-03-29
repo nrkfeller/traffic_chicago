@@ -2,7 +2,7 @@ from google.cloud import bigquery
 from google.cloud import storage
 
 import logging
-import pickle
+import json
 
 BUCKET_NAME = 'chicagobucket'
 
@@ -11,7 +11,7 @@ class BigQueryGetter(object):
     def __init__(self):
         self.client = bigquery.Client()
 
-    def get_segment_data(self):
+    def get_region_data(self):
         regions_query = """
         SELECT DISTINCT
           region
@@ -50,19 +50,21 @@ class BigQueryGetter(object):
             times = []
             speeds = []
             for row in rows:
-                times.append(row['_last_updt'])
+                times.append(str(row['_last_updt']))
                 speeds.append(row['current_speed'])
 
             output[region] = [times, speeds]
 
-        filename = 'segments.pickle'
+        filename = 'regions.json'
 
-        with open(filename, 'wb') as handle:
-            pickle.dump(output, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        with open(filename, 'w') as outfile:
+            json.dump(output, outfile)
 
         self._upload_blob(BUCKET_NAME, filename, filename)
 
-    def get_region_data(self):
+        logging.info("{} uploaded to {}".format(filename, BUCKET_NAME))
+
+    def get_segment_data(self):
         query_job = self.client.query(
             """
       SELECT _last_updt, segmentid, _traffic
@@ -82,16 +84,18 @@ class BigQueryGetter(object):
         output['_traffic'] = []
 
         for row in rows:
-            output['_last_updt'].append(row['_last_updt'])
+            output['_last_updt'].append(str(row['_last_updt']))
             output['segmentid'].append(row['segmentid'])
             output['_traffic'].append(row['_traffic'])
 
-        filename = 'regions.pickle'
+        filename = 'segments.json'
 
-        with open(filename, 'wb') as handle:
-            pickle.dump(output, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        with open(filename, 'w') as outfile:
+            json.dump(output, outfile)
 
         self._upload_blob(BUCKET_NAME, filename, filename)
+
+        logging.info("{} uploaded to {}".format(filename, BUCKET_NAME))
 
     def _upload_blob(self,
                      bucket_name,
