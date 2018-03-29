@@ -1,6 +1,7 @@
 from google.cloud import bigquery
 from google.cloud import storage
 
+import logging
 import pickle
 
 BUCKET_NAME = 'chicagobucket'
