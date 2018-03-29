@@ -7,3 +7,7 @@ cron:
   url: /runseg
   schedule: every 5 minutes
   target: pubsubsegments
+- description: "GET traffic data into gs bucket"
+  url: /gettingdata
+  schedule: every 5 minutes
+  target: gettingdatatogs
