@@ -15,7 +15,8 @@
   <body>
   <div>
       <nav>
-        <div class="nav-wrapper indigo darken-4">
+        <div class="nav-wrapper blue">
+            <div class="container">
           <a href="#" class="brand-logo">Chicago Traffic</a>
           <ul id="nav-mobile" class="right hide-on-med-and-down">
             <li><a href="/">Map</a></li>
@@ -23,16 +24,26 @@
             <li><a href="architecture">Architecture</a></li>
           </ul>
         </div>
-      </nav>
+      </div>
+    </nav>
   </div>
 
+  <div id="charts" style="padding: 20px 10px;" class="container">
+      <h3>Read Time Traffic Map</h3>
+      <p>
+          Which Chicago Streets to Avoid
+      </p>
+      <a class="waves-effect waves-light btn-large blue" href="https://developers.google.com/maps/"><i class="material-icons right">map</i>Maps API</a>
+  </div>
+
+  <div class=" grey lighten-4">
   <div class="container">
       <div class="row">
           <div class="col s12">&nbsp</div>
           <div class="col s12"><h2>Map Of Chicago Traffic Status</h2></div>
           <div class="col s3">
 
-              <div class="card orange darken-4">
+              <div class="card">
                 <div class="card-content white-text">
                   <span class="card-title">Streets to Avoid</span>
                   <ul class="collection">
@@ -48,28 +59,17 @@
 
           <div class="col s9">
 
-                <div class="card orange darken-4">
+                <div class="card">
                   <div class="card-content white-text">
                     <span class="card-title">Current Traffic</span>
                     <div id="map">
                   </div>
                 </div>
               </div>
-
           </div>
-
-
   </div>
-
-
-
-
-
-
-
-
-
-  <div id="map"></div>
+  </div>
+</div>
 
     <script async defer
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAu3-00fcoXjHePR4asbDLn-cwaNoeARMo&callback=initMap">
