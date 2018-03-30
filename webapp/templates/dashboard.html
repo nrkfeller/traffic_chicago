@@ -7,13 +7,13 @@
     <!--https://pythonspot.com/flask-and-great-looking-charts-using-chart-js/-->
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/css/materialize.min.css">
-    <script src="static/js/Chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
     <title>Chicago Traffic</title>
   </head>
 
   <body>
   <nav>
-    <div class="nav-wrapper indigo darken-4">
+    <div class="nav-wrapper blue">
       <a href="#" class="brand-logo">Chicago Traffic</a>
       <ul id="nav-mobile" class="right hide-on-med-and-down">
         <li><a href="/">Map</a></li>
@@ -23,84 +23,169 @@
     </div>
   </nav>
 
+  <div id="charts" style="padding: 20px 10px;" class="container">
+      <h3>Dashboard</h3>
+      <p>
+          Chicago Traffic data in charts. See the Source Code
+      </p>
+      <a class="waves-effect waves-light btn-large blue" href="https://github.com/nrkfeller/traffic_chicago"><i class="material-icons right">code</i>Source Code</a>
+  </div>
 
-<!-- bar chart canvas element -->
-<div class="container">
-    <h1>Flask Chart.js</h1>
+<div class=" grey lighten-4">
 
-    <div class="row">
-        <div class="col s6">
-          <div class="card orange darken-4">
-            <div class="card-content white-text">
-              <span class="card-title">Current Traffic</span>
-              <canvas id="chart" width="570" height="363"></canvas>
+    <div class="container">
+        <div class="row">
+            <div class="col s12">
+              <div class="card">
+                <div class="card-content white-text">
+                  <span class="card-title">Current Traffic</span>
+                  <canvas id="line-chart" width="800" height="450"></canvas>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-
-        <div class="col s6">
-          <div class="card orange darken-4">
-            <div class="card-content white-text">
-              <span class="card-title">Current Traffic</span>
-              <canvas id="chart" width="570" height="363"></canvas>
+            <div class="col s12">
+              <div class="card">
+                <div class="card-content white-text">
+                  <span class="card-title">Current Traffic</span>
+                  <canvas id="bar-chart-horizontal" width="800" height="450"></canvas>
+                </div>
+              </div>
             </div>
-          </div>
         </div>
     </div>
-</div>
 
-</div>
+
+
+
+
 
 <script>
+data = JSON.parse({{regions|tojson|safe}})
 
-   // bar chart data
-   var barData = {
-   labels : [{% for item in labels %}
-                  "{{item}}",
-              {% endfor %}],
-   datasets : [
-      {
-            fillColor: "rgba(151,187,205,0.2)",
-            strokeColor: "rgba(151,187,205,1)",
-            pointColor: "rgba(151,187,205,1)",
-            pointStrokeColor: "#fff",
-            pointHighlightFill: "#fff",
-            pointHighlightStroke: "rgba(151,187,205,1)",
-            bezierCurve : false,
-            data : [{% for item in values %}
-                      {{item}},
-                    {% endfor %}]
-      }]
-   }
+var date = data["West Town-Near West"][1][0].slice(0,10);
+var starttime = data["West Town-Near West"][1][data["West Town-Near West"][1].length - 1].slice(11,19)
+var endtime = data["West Town-Near West"][1][0].slice(11,19)
 
-    Chart.defaults.global.animationSteps = 50;
-    Chart.defaults.global.tooltipYPadding = 16;
-    Chart.defaults.global.tooltipCornerRadius = 0;
-    Chart.defaults.global.tooltipTitleFontStyle = "normal";
-    Chart.defaults.global.tooltipFillColor = "rgba(0,0,0,0.8)";
-    Chart.defaults.global.animationEasing = "easeOutBounce";
-    Chart.defaults.global.responsive = false;
-    Chart.defaults.global.scaleLineColor = "black";
-    Chart.defaults.global.scaleFontSize = 16;
+var times = data["West Town-Near West"][1].reverse()
 
-   // get bar chart canvas
-   var mychart = document.getElementById("chart").getContext("2d");
+times.forEach(function(part, index, array){
+    array[index] = part.slice(11,16)
+})
 
-   steps = 10
-   max = 10
-   // draw bar chart
-   var LineChartDemo = new Chart(mychart).Line(barData, {
-        scaleOverride: true,
-        scaleSteps: steps,
-        scaleStepWidth: Math.ceil(max / steps),
-        scaleStartValue: 0,
-        scaleShowVerticalLines: true,
-        scaleShowGridLines : true,
-        barShowStroke : true,
-        scaleShowLabels: true,
-        bezierCurve: false,
+new Chart(document.getElementById("line-chart"), {
+  type: 'line',
+  data: {
+    labels: times,
+    datasets: [{
+        data: data["West Town-Near West"][0].reverse(),
+        label: "West Town-Near West",
+        borderColor: "#3e95cd",
+        fill: false
+      }, {
+        data: data['Midway-Garfield Rdg-Clearing'][0].reverse(),
+        label: 'Midway-Garfield Rdg-Clearing',
+        borderColor: "#626567",
+        fill: false
+      },  {
+        data: data['Dunning-Portage-Belmont Cragn'][0].reverse(),
+        label: 'Dunning-Portage-Belmont Cragn',
+        borderColor: "#7E5109",
+        fill: false
+      }, {
+        data: data['Humboldt-Garfield Prk E/W'][0].reverse(),
+        label: 'Humboldt-Garfield Prk E/W',
+        borderColor: "#186A3B",
+        fill: false
+      }, {
+        data: data['Edge Water-Uptown'][0].reverse(),
+        label: 'Edge Water-Uptown',
+        borderColor: "#0B5345",
+        fill: false
+      }, {
+        data: data['Riverdale-Hegewisch'][0].reverse(),
+        label: 'Riverdale-Hegewisch',
+        borderColor: "#1B4F72",
+        fill: false
+      }, {
+        data: data['Downtown Lakefront'][0].reverse(),
+        label: 'Downtown Lakefront',
+        borderColor: "#512E5F",
+        fill: false
+      }, {
+        data: data['Hyde Park-Kenwood-Woodlawn'][0].reverse(),
+        label: 'Hyde Park-Kenwood-Woodlawn',
+        borderColor: "#641E16",
+        fill: false
+      }, {
+        data: data['Near South-Douglas'][0].reverse(),
+        label: 'Near South-Douglas',
+        borderColor: "#16A085",
+        fill: false
+      }, {
+        data: data['Near North'][0].reverse(),
+        label: 'Near North',
+        borderColor: "#3498DB",
+        fill: false
+      }, {
+        data: data['Near South-Douglas'][0].reverse(),
+        label: 'Near South-Douglas',
+        borderColor: "#8E44AD",
+        fill: false
+      }, {
+        data: data['Lawndale N/S'][0].reverse(),
+        label: 'Lawndale N/S',
+        borderColor: "#E74C3C",
+        fill: false
+      }
+    ]
+  },
+  options: {
+    title: {
+      display: true,
+      text: 'Speed Averages on ' + date + ' Between ' + starttime + ' and ' + endtime
+    }
+  }
+});
 
-   });
+sdata = JSON.parse({{segments|tojson|safe}});
+
+var speeds = sdata['_traffic'];
+
+var unknown = 0, slow=0, medium=0, fast=0;
+
+for (i = 0 ; i < speeds.length; i++){
+    if (speeds[i] === -1) {
+        unknown++
+    } else if (speeds[i] > 0 && speeds[i] < 20) {
+        slow++
+    } else if (speeds[i] > 20 && speeds[i] < 30) {
+        medium++
+    } else {
+        fast++
+    }
+}
+
+
+new Chart(document.getElementById("bar-chart-horizontal"), {
+    type: 'horizontalBar',
+    data: {
+      labels: ["Unknown", "Between 0 and 20", "Between 20 and 30", "Faster than 30"],
+      datasets: [
+        {
+          label: "Population (millions)",
+          backgroundColor: ["#3e95cd", "#8e5ea2","#3cba9f","#e8c3b9"],
+          data: [unknown, slow, medium, fast]
+        }
+      ]
+    },
+    options: {
+      legend: { display: false },
+      title: {
+        display: true,
+        text: 'Histogram of Segments Speeds at ' + sdata['_last_updt'][0]
+      }
+    }
+});
 
 
 </script>
