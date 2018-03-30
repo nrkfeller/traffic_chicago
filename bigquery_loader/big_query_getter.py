@@ -1,5 +1,6 @@
 from google.cloud import bigquery
 from google.cloud import storage
+from collections import defaultdict
 
 import logging
 import json
@@ -12,48 +13,29 @@ class BigQueryGetter(object):
         self.client = bigquery.Client()
 
     def get_region_data(self):
-        regions_query = """
-        SELECT DISTINCT
-          region
-        FROM
-          `nickapi-184104.demos.regions`
+        client = bigquery.Client()
+
+        query_job = client.query(
+            """
+            SELECT _last_updt, current_speed, region
+            FROM `nickapi-184104.demos.regions`
+            Order by _last_updt desc
+            LIMIT 3000
         """
-        query_job = self.client.query(regions_query)
+        )
 
-        rows = query_job.result()
+        iterator = query_job.result()
 
-        regions = [str(row['region']) for row in rows]
-
-        query = """
-        SELECT
-            _last_updt, current_speed
-        FROM
-        `nickapi-184104.demos.regions`
-        WHERE
-            region=@REGION
-        ORDER BY
-            _last_updt
-        """
+        region_speed = defaultdict(list)
+        region_time = defaultdict(list)
+        for i in iterator:
+            region_speed[i['region']].append(i['current_speed'])
+            region_time[i['region']].append(str(i['_last_updt']))
 
         output = dict()
-        for region in regions:
 
-            query_params = [
-                bigquery.ScalarQueryParameter('REGION', 'STRING', region)
-            ]
-            job_config = bigquery.QueryJobConfig()
-            job_config.query_parameters = query_params
-            query_job = self.client.query(query, job_config=job_config)
-
-            rows = query_job.result()
-
-            times = []
-            speeds = []
-            for row in rows:
-                times.append(str(row['_last_updt']))
-                speeds.append(row['current_speed'])
-
-            output[region] = [times, speeds]
+        for key in region_speed.keys():
+            output[key] = [region_speed[key], region_time[key]]
 
         filename = 'regions.json'
 

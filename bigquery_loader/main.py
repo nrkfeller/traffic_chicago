@@ -9,7 +9,6 @@ app = Flask(__name__)
 
 @app.route('/gettingdata')
 def gettingdata():
-    global SEGMENTS, REGIONS
     bqg = BigQueryGetter()
     bqg.get_region_data()
     bqg.get_segment_data()
@@ -27,4 +26,4 @@ def server_error(e):
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8080, debug=True)
+    app.run(host='0.0.0.0', port=8081, debug=True)
