@@ -37,15 +37,19 @@
   </div>
 
   <div class=" grey lighten-4">
-  <div class="container">
+  <div class="container" >
       <div class="row">
           <div class="col s12">&nbsp</div>
 
           <div class="col s12">
-                <div class="card">
+                <div class="card" id="maparea">
                   <div class="card-content white-text">
-                    <div id="map">
-                  </div>
+                    <div id="map"></div>
+                    <div class="card-action">
+                      <a href="#" id="slow"><font color="#E74C3C">Less than 20 mph</font></a>
+                      <a href="#" id="medium"><font color="#F1C40F">Between 20 and 30 mph</font></a>
+                      <a href="#" id="fast"><font color="#2ECC71">More than 30 mph</font></a>
+                    </div>
                 </div>
               </div>
           </div>
@@ -55,12 +59,11 @@
 
     <script>
 
+    var map;
     function initMap() {
 
-
-
         var uluru = {lat: 41.8735599, lng: -87.6293282};
-        var map = new google.maps.Map(document.getElementById('map'), {
+        map = new google.maps.Map(document.getElementById('map'), {
           zoom: 12.5,
           center: uluru
         });
@@ -71,19 +74,48 @@
         })
             .then(function(data) {
 
-            for (i = 0; i < data.length; i++) {
-                    var color;
-                    var speed = data[i]['_traffic']
-                    if (speed === -1) {
-                        color = "#BDC3C7"
-                    } else if (speed > -1 && speed < 20) {
-                        color = "#E74C3C"
-                    } else if (speed > 19 && speed < 30) {
-                        color = "#F1C40F"
-                    } else {
-                        color = "#2ECC71"
-                    }
+            // for (i = 0; i < data.length; i++) {
+            //         var color;
+            //         var speed = data[i]['_traffic']
+            //         if (speed === -1) {
+            //             color = "#BDC3C7"
+            //         } else if (speed > -1 && speed < 20) {
+            //             color = "#E74C3C"
+            //         } else if (speed > 19 && speed < 30) {
+            //             color = "#F1C40F"
+            //         } else {
+            //             color = "#2ECC71"
+            //         }
+            //
+            //         var line = new google.maps.Polyline({
+            //             path: [
+            //                 new google.maps.LatLng(data[i]['_lif_lat'], data[i]['start_lon']),
+            //                 new google.maps.LatLng(data[i]['_lit_lat'], data[i]['_lit_lon'])
+            //             ],
+            //             strokeColor: color,
+            //             strokeOpacity: 1.0,
+            //             strokeWeight: 3,
+            //             map: map
+            //         });
+            //     }
+                document.getElementById("title").textContent= "Real Time Traffic Map - Updated " + data[0]['_last_updt'];
+            });
+            document.getElementById('slow').addEventListener('click', showRed);
+            document.getElementById('medium').addEventListener('click', showYellow);
+            document.getElementById('fast').addEventListener('click', showGreen);
+        }
 
+    function showRed(){
+        fetch('https://data.cityofchicago.org/resource/8v9j-bter.json')
+            .then(function(response) {
+            return response.json();
+        })
+            .then(function(data) {
+
+            for (i = 0; i < data.length; i++) {
+                var speed = data[i]['_traffic']
+                if (speed > -1 && speed < 20) {
+                    color = "#E74C3C"
                     var line = new google.maps.Polyline({
                         path: [
                             new google.maps.LatLng(data[i]['_lif_lat'], data[i]['start_lon']),
@@ -95,9 +127,72 @@
                         map: map
                     });
                 }
-                document.getElementById("title").textContent= "Real Time Traffic Map - Updated " + data[0]['_last_updt'];
+
+            }
+        });
+        document.getElementById('slow').addEventListener('click', showRed);
+    }
+
+
+
+    function showYellow(){
+        fetch('https://data.cityofchicago.org/resource/8v9j-bter.json')
+            .then(function(response) {
+            return response.json();
+        })
+            .then(function(data) {
+
+            for (i = 0; i < data.length; i++) {
+                var speed = data[i]['_traffic']
+                if (speed > 19 && speed < 30) {
+                    color = "#F1C40F"
+                    var line = new google.maps.Polyline({
+                        path: [
+                            new google.maps.LatLng(data[i]['_lif_lat'], data[i]['start_lon']),
+                            new google.maps.LatLng(data[i]['_lit_lat'], data[i]['_lit_lon'])
+                        ],
+                        strokeColor: color,
+                        strokeOpacity: 1.0,
+                        strokeWeight: 3,
+                        map: map
+                    });
+                }
+
+
+                }
             });
+            document.getElementById('slow').addEventListener('click', showRed);
         }
+
+
+
+    function showGreen(){
+        fetch('https://data.cityofchicago.org/resource/8v9j-bter.json')
+            .then(function(response) {
+            return response.json();
+        })
+            .then(function(data) {
+
+            for (i = 0; i < data.length; i++) {
+                var speed = data[i]['_traffic']
+                if (speed > 29) {
+                    color = "#2ECC71"
+                    var line = new google.maps.Polyline({
+                        path: [
+                            new google.maps.LatLng(data[i]['_lif_lat'], data[i]['start_lon']),
+                            new google.maps.LatLng(data[i]['_lit_lat'], data[i]['_lit_lon'])
+                        ],
+                        strokeColor: color,
+                        strokeOpacity: 1.0,
+                        strokeWeight: 3,
+                        map: map
+                    });
+                }
+                }
+            });
+            document.getElementById('slow').addEventListener('click', showRed);
+        }
+
 
 
     </script>
