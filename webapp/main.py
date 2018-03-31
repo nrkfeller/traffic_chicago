@@ -2,6 +2,7 @@ from google.cloud import storage
 
 import logging
 import json
+import urllib
 
 from flask import Flask, render_template
 
@@ -9,35 +10,35 @@ app = Flask(__name__)
 
 SEGMENTS_BLOB = 'segments.json'
 REGIONS_BLOB = 'regions.json'
+SEGMENTS_URL = \
+    'https://gettingdatatogs-dot-nickapi-184104.appspot.com/segments'
+REGIONS_URL = \
+    'https://gettingdatatogs-dot-nickapi-184104.appspot.com/regions'
 
 
 @app.route('/')
 def hello():
-    """Return a friendly HTTP greeting."""
-    #regions = readFileFromBucket(REGIONS_BLOB)
-    arr = [1, 2, 3]
-    return render_template('index.html', value=arr)
+    response = urllib.urlopen(SEGMENTS_URL)
+    data = json.loads(response.read())
+    return render_template('index.html', segments=data)
 
 
 @app.route('/architecture')
 def architecture():
-    """Return a friendly HTTP greeting."""
     return render_template('architecture.html')
 
 
 @app.route('/dashboard')
 def dashboard():
-    """Return a friendly HTTP greeting."""
-    segments = readFileFromBucket(SEGMENTS_BLOB)
-    regions = readFileFromBucket(REGIONS_BLOB)
+    response = urllib.urlopen(SEGMENTS_URL)
+    segments = json.loads(response.read())
 
-    # dt = regions['Downtown Lakefront']
-    # values = reversed(dt[0][-20:])
-    # times = reversed([str(i) for i in dt[1]][-20:])
+    response = urllib.urlopen(REGIONS_URL)
+    regions = json.loads(response.read())
 
     return render_template('dashboard.html',
-                           regions=json.dumps(regions),
-                           segments=json.dumps(segments)
+                           regions=regions,
+                           segments=segments
                            )
 
 
@@ -59,7 +60,5 @@ def readFileFromBucket(filename):
 
 
 if __name__ == '__main__':
-    # This is used when running locally. Gunicorn is used to run the
-    # application on Google App Engine. See entrypoint in app.yaml.
     app.run(host='127.0.0.1', port=8080, debug=True)
 # [END app]

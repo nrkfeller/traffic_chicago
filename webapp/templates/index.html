@@ -29,7 +29,7 @@
   </div>
 
   <div id="charts" style="padding: 20px 10px;" class="container">
-      <h3>Read Time Traffic Map</h3>
+      <h3 id="title">Real Time Traffic Map</h3>
       <p>
           Which Chicago Streets to Avoid
       </p>
@@ -40,28 +40,10 @@
   <div class="container">
       <div class="row">
           <div class="col s12">&nbsp</div>
-          <div class="col s12"><h2>Map Of Chicago Traffic Status</h2></div>
-          <div class="col s3">
 
-              <div class="card">
-                <div class="card-content white-text">
-                  <span class="card-title">Streets to Avoid</span>
-                  <ul class="collection">
-                      <li class="collection-item">Alvin</li>
-                      <li class="collection-item">Alvin</li>
-                      <li class="collection-item">Alvin</li>
-                      <li class="collection-item">Alvin</li>
-                  </ul>
-              </div>
-            </div>
-
-          </div>
-
-          <div class="col s9">
-
+          <div class="col s12">
                 <div class="card">
                   <div class="card-content white-text">
-                    <span class="card-title">Current Traffic</span>
                     <div id="map">
                   </div>
                 </div>
@@ -69,15 +51,65 @@
           </div>
   </div>
   </div>
-</div>
+  </div>
+
+    <script>
+
+    function initMap() {
+
+
+
+        var uluru = {lat: 41.8735599, lng: -87.6293282};
+        var map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 12.5,
+          center: uluru
+        });
+
+        fetch('https://data.cityofchicago.org/resource/8v9j-bter.json')
+            .then(function(response) {
+            return response.json();
+        })
+            .then(function(data) {
+
+            for (i = 0; i < data.length; i++) {
+                    var color;
+                    var speed = data[i]['_traffic']
+                    if (speed === -1) {
+                        color = "#BDC3C7"
+                    } else if (speed > -1 && speed < 20) {
+                        color = "#E74C3C"
+                    } else if (speed > 19 && speed < 30) {
+                        color = "#F1C40F"
+                    } else {
+                        color = "#2ECC71"
+                    }
+
+                    var line = new google.maps.Polyline({
+                        path: [
+                            new google.maps.LatLng(data[i]['_lif_lat'], data[i]['start_lon']),
+                            new google.maps.LatLng(data[i]['_lit_lat'], data[i]['_lit_lon'])
+                        ],
+                        strokeColor: color,
+                        strokeOpacity: 1.0,
+                        strokeWeight: 3,
+                        map: map
+                    });
+                }
+                document.getElementById("title").textContent= "Real Time Traffic Map - Updated " + data[0]['_last_updt'];
+            });
+        }
+
+
+    </script>
 
     <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAu3-00fcoXjHePR4asbDLn-cwaNoeARMo&callback=initMap">
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAu3-00fcoXjHePR4asbDLn-cwaNoeARMo&callback=initMap">
     </script>
 
 
 
     <!--JavaScript at end of body for optimized loading-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/js/materialize.min.js"></script>
+
   </body>
 </html>

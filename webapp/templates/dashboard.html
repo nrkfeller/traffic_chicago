@@ -62,7 +62,10 @@
 
 
 <script>
-data = JSON.parse({{regions|tojson|safe}})
+
+data = JSON.parse('{{ regions | tojson | safe}}');
+
+console.log(data)
 
 var date = data["West Town-Near West"][1][0].slice(0,10);
 var starttime = data["West Town-Near West"][1][data["West Town-Near West"][1].length - 1].slice(11,19)
@@ -149,7 +152,7 @@ new Chart(document.getElementById("line-chart"), {
   }
 });
 
-sdata = JSON.parse({{segments|tojson|safe}});
+sdata = JSON.parse('{{segments|tojson|safe}}');
 
 var speeds = sdata['_traffic'];
 
