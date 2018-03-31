@@ -50,7 +50,15 @@ class BigQueryGetter(object):
     def get_segment_data(self):
         query_job = self.client.query(
             """
-      SELECT _last_updt, segmentid, _traffic, street, _lif_lat, start_lon, _lit_lat, _lit_lon
+      SELECT
+        _last_updt,
+        segmentid,
+        _traffic,
+        street,
+        _lif_lat,
+        start_lon,
+        _lit_lat,
+        _lit_lon
       FROM `nickapi-184104.demos.segments`
       ORDER BY
         _last_updt desc
