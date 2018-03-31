@@ -60,6 +60,9 @@
     <script>
 
     var map;
+    var green = [];
+    var yellow = [];
+    var red = [];
     function initMap() {
 
         var uluru = {lat: 41.8735599, lng: -87.6293282};
@@ -74,30 +77,57 @@
         })
             .then(function(data) {
 
-            // for (i = 0; i < data.length; i++) {
-            //         var color;
-            //         var speed = data[i]['_traffic']
-            //         if (speed === -1) {
-            //             color = "#BDC3C7"
-            //         } else if (speed > -1 && speed < 20) {
-            //             color = "#E74C3C"
-            //         } else if (speed > 19 && speed < 30) {
-            //             color = "#F1C40F"
-            //         } else {
-            //             color = "#2ECC71"
-            //         }
-            //
-            //         var line = new google.maps.Polyline({
-            //             path: [
-            //                 new google.maps.LatLng(data[i]['_lif_lat'], data[i]['start_lon']),
-            //                 new google.maps.LatLng(data[i]['_lit_lat'], data[i]['_lit_lon'])
-            //             ],
-            //             strokeColor: color,
-            //             strokeOpacity: 1.0,
-            //             strokeWeight: 3,
-            //             map: map
-            //         });
-            //     }
+            for (i = 0; i < data.length; i++) {
+                    var color;
+                    var speed = data[i]['_traffic']
+                    if (speed === -1) {
+                        color = "#BDC3C7"
+                        var line = new google.maps.Polyline({
+                            path: [
+                                new google.maps.LatLng(data[i]['_lif_lat'], data[i]['start_lon']),
+                                new google.maps.LatLng(data[i]['_lit_lat'], data[i]['_lit_lon'])
+                            ],
+                            strokeColor: color,
+                            strokeOpacity: 1.0,
+                            strokeWeight: 3
+                        });
+                    } else if (speed > -1 && speed < 20) {
+                        color = "#E74C3C"
+                        red.push(new google.maps.Polyline({
+                            path: [
+                                new google.maps.LatLng(data[i]['_lif_lat'], data[i]['start_lon']),
+                                new google.maps.LatLng(data[i]['_lit_lat'], data[i]['_lit_lon'])
+                            ],
+                            strokeColor: color,
+                            strokeOpacity: 1.0,
+                            strokeWeight: 3
+                        }))
+                    } else if (speed > 19 && speed < 30) {
+                        color = "#F1C40F"
+                        yellow.push(new google.maps.Polyline({
+                            path: [
+                                new google.maps.LatLng(data[i]['_lif_lat'], data[i]['start_lon']),
+                                new google.maps.LatLng(data[i]['_lit_lat'], data[i]['_lit_lon'])
+                            ],
+                            strokeColor: color,
+                            strokeOpacity: 1.0,
+                            strokeWeight: 3
+                        }))
+                    } else {
+                        color = "#2ECC71"
+                        green.push(new google.maps.Polyline({
+                            path: [
+                                new google.maps.LatLng(data[i]['_lif_lat'], data[i]['start_lon']),
+                                new google.maps.LatLng(data[i]['_lit_lat'], data[i]['_lit_lon'])
+                            ],
+                            strokeColor: color,
+                            strokeOpacity: 1.0,
+                            strokeWeight: 3
+                        }))
+                    }
+
+
+                }
                 document.getElementById("title").textContent= "Real Time Traffic Map - Updated " + data[0]['_last_updt'];
             });
             document.getElementById('slow').addEventListener('click', showRed);
@@ -106,92 +136,103 @@
         }
 
     function showRed(){
-        fetch('https://data.cityofchicago.org/resource/8v9j-bter.json')
-            .then(function(response) {
-            return response.json();
-        })
-            .then(function(data) {
-
-            for (i = 0; i < data.length; i++) {
-                var speed = data[i]['_traffic']
-                if (speed > -1 && speed < 20) {
-                    color = "#E74C3C"
-                    var line = new google.maps.Polyline({
-                        path: [
-                            new google.maps.LatLng(data[i]['_lif_lat'], data[i]['start_lon']),
-                            new google.maps.LatLng(data[i]['_lit_lat'], data[i]['_lit_lon'])
-                        ],
-                        strokeColor: color,
-                        strokeOpacity: 1.0,
-                        strokeWeight: 3,
-                        map: map
-                    });
-                }
-
+        if (red[0].map === map) {
+            for (i = 0; i < red.length; i++) {
+                red[i].setMap(null)
+                console.log(red[i])
             }
-        });
-        document.getElementById('slow').addEventListener('click', showRed);
+        } else {
+            for (i = 0; i < red.length; i++) {
+                red[i].setMap(map)
+                console.log(red[i])
+            }
+        }
     }
 
-
-
     function showYellow(){
-        fetch('https://data.cityofchicago.org/resource/8v9j-bter.json')
-            .then(function(response) {
-            return response.json();
-        })
-            .then(function(data) {
-
-            for (i = 0; i < data.length; i++) {
-                var speed = data[i]['_traffic']
-                if (speed > 19 && speed < 30) {
-                    color = "#F1C40F"
-                    var line = new google.maps.Polyline({
-                        path: [
-                            new google.maps.LatLng(data[i]['_lif_lat'], data[i]['start_lon']),
-                            new google.maps.LatLng(data[i]['_lit_lat'], data[i]['_lit_lon'])
-                        ],
-                        strokeColor: color,
-                        strokeOpacity: 1.0,
-                        strokeWeight: 3,
-                        map: map
-                    });
-                }
-
-
-                }
-            });
-            document.getElementById('slow').addEventListener('click', showRed);
+        if (yellow[0].map === map) {
+            for (i = 0; i < yellow.length; i++) {
+                yellow[i].setMap(null)
+                console.log(yellow[i])
+            }
+        } else {
+            for (i = 0; i < yellow.length; i++) {
+                yellow[i].setMap(map)
+                console.log(yellow[i])
+            }
         }
-
-
+    }
 
     function showGreen(){
-        fetch('https://data.cityofchicago.org/resource/8v9j-bter.json')
-            .then(function(response) {
-            return response.json();
-        })
-            .then(function(data) {
-
-            for (i = 0; i < data.length; i++) {
-                var speed = data[i]['_traffic']
-                if (speed > 29) {
-                    color = "#2ECC71"
-                    var line = new google.maps.Polyline({
-                        path: [
-                            new google.maps.LatLng(data[i]['_lif_lat'], data[i]['start_lon']),
-                            new google.maps.LatLng(data[i]['_lit_lat'], data[i]['_lit_lon'])
-                        ],
-                        strokeColor: color,
-                        strokeOpacity: 1.0,
-                        strokeWeight: 3,
-                        map: map
-                    });
-                }
-                }
-            });
-            document.getElementById('slow').addEventListener('click', showRed);
+        if (green[0].map === map) {
+            for (i = 0; i < green.length; i++) {
+                green[i].setMap(null)
+            }
+        } else {
+            for (i = 0; i < green.length; i++) {
+                green[i].setMap(map)
+            }
         }
+}
+
+
+
+
+    // function showYellow(){
+    //     fetch('https://data.cityofchicago.org/resource/8v9j-bter.json')
+    //         .then(function(response) {
+    //         return response.json();
+    //     })
+    //         .then(function(data) {
+    //
+    //         for (i = 0; i < data.length; i++) {
+    //             var speed = data[i]['_traffic']
+    //             if (speed > 19 && speed < 30) {
+    //                 color = "#F1C40F"
+    //                 var line = new google.maps.Polyline({
+    //                     path: [
+    //                         new google.maps.LatLng(data[i]['_lif_lat'], data[i]['start_lon']),
+    //                         new google.maps.LatLng(data[i]['_lit_lat'], data[i]['_lit_lon'])
+    //                     ],
+    //                     strokeColor: color,
+    //                     strokeOpacity: 1.0,
+    //                     strokeWeight: 3,
+    //                     map: map
+    //                 });
+    //             }
+    //
+    //
+    //             }
+    //         });
+    //     }
+    //
+    //
+    //
+    // function showGreen(){
+    //     fetch('https://data.cityofchicago.org/resource/8v9j-bter.json')
+    //         .then(function(response) {
+    //         return response.json();
+    //     })
+    //         .then(function(data) {
+    //
+    //         for (i = 0; i < data.length; i++) {
+    //             var speed = data[i]['_traffic']
+    //             if (speed > 29) {
+    //                 color = "#2ECC71"
+    //                 var line = new google.maps.Polyline({
+    //                     path: [
+    //                         new google.maps.LatLng(data[i]['_lif_lat'], data[i]['start_lon']),
+    //                         new google.maps.LatLng(data[i]['_lit_lat'], data[i]['_lit_lon'])
+    //                     ],
+    //                     strokeColor: color,
+    //                     strokeOpacity: 1.0,
+    //                     strokeWeight: 3,
+    //                     map: map
+    //                 });
+    //             }
+    //             }
+    //         });
+    //     }
 
 
 
