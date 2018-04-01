@@ -2,9 +2,14 @@ from google.cloud import storage
 
 import logging
 import json
-import urllib
+import sys
 
 from flask import Flask, render_template
+
+if sys.version_info[0] == 3:
+    from urllib.request import urlopen
+else:
+    from urllib import urlopen
 
 app = Flask(__name__)
 
@@ -18,7 +23,7 @@ REGIONS_URL = \
 
 @app.route('/')
 def hello():
-    response = urllib.urlopen(SEGMENTS_URL)
+    response = urlopen(SEGMENTS_URL)
     data = json.loads(response.read())
     return render_template('index.html', segments=data)
 
@@ -30,10 +35,10 @@ def architecture():
 
 @app.route('/dashboard')
 def dashboard():
-    response = urllib.urlopen(SEGMENTS_URL)
+    response = urlopen(SEGMENTS_URL)
     segments = json.loads(response.read())
 
-    response = urllib.urlopen(REGIONS_URL)
+    response = urlopen(REGIONS_URL)
     regions = json.loads(response.read())
 
     return render_template('dashboard.html',
