@@ -1,4 +1,0 @@
-cron:
-- description: "GET traffic data into pubsub"
-  url: /
-  schedule: every 5 minutes
