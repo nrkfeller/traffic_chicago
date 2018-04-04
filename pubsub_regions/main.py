@@ -60,6 +60,48 @@ def start_publishing():
     return 'done'
 
 
+TRAFFIC_URL_SEGMENTS = 'https://data.cityofchicago.org/resource/8v9j-bter.json'
+TOPIC_SEGMENTS = 'chicagosegments'
+last_update_seg = ''
+
+
+def publish_segments_to_pubsub(publisher, topic_path):
+    global last_update_seg
+
+    response = urllib.urlopen(TRAFFIC_URL_SEGMENTS)
+    data = json.loads(response.read())
+
+    if last_update_seg != data[0]['_last_updt']:
+
+        last_update_seg = data[0]['_last_updt']
+
+        for entry in data:
+            entry['_lif_lat'] = float(entry['_lif_lat'])
+            entry['start_lon'] = float(entry['start_lon'])
+            entry['_lit_lat'] = float(entry['_lit_lat'])
+            entry['_traffic'] = float(entry['_traffic'])
+            entry['_lit_lon'] = float(entry['_lit_lon'])
+            entry['_length'] = float(entry['_length'])
+            publisher.publish(
+                topic_path,
+                data=json.dumps(entry))
+
+
+@app.route('/runseg')
+def start_publishing_seg():
+    print('get data')
+    publisher = pubsub.PublisherClient()
+    topic_path = publisher.topic_path('nickapi-184104', TOPIC_SEGMENTS)
+    try:
+        publisher.get_topic(topic_path)
+        logging.info('Reusing pub/sub topic {}'.format(TOPIC_SEGMENTS))
+    except:
+        publisher.create_topic(topic_path)
+        logging.info('Creating pub/sub topic {}'.format(TOPIC_SEGMENTS))
+    publish_segments_to_pubsub(publisher, topic_path)
+    return 'done'
+
+
 if __name__ == '__main__':
 
     app.run(host='0.0.0.0', port=8080, debug=True)

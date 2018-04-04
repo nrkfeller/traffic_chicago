@@ -1,7 +1,7 @@
 runtime: python
 env: flex
 entrypoint: gunicorn -b :$PORT main:app
-service: pubsubregions
+service: pubsubtraffic
 
 runtime_config:
   python_version: 2

@@ -2,11 +2,11 @@ cron:
 - description: "GET traffic data into pubsubregions"
   url: /runreg
   schedule: every 5 minutes
-  target: pubsubregions
+  target: pubsubtraffic
 - description: "GET traffic data into pubsubsegments"
   url: /runseg
   schedule: every 5 minutes
-  target: pubsubsegments
+  target: pubsubtraffic
 - description: "GET traffic data into gs bucket"
   url: /gettingdata
   schedule: every 5 minutes
