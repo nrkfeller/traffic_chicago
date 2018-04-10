@@ -20,7 +20,7 @@ class BigQueryGetter(object):
             SELECT _last_updt, current_speed, region
             FROM `nickapi-184104.demos.regions`
             Order by _last_updt desc
-            LIMIT 3000
+            LIMIT 2700
         """
         )
 

@@ -39,11 +39,21 @@
     <div class="container">
         <div class="row">
             <div class="col s12">
-              <div class="card">
+              <div class="card" style="height: 900px;" >
                 <div class="card-content white-text">
                   <span class="card-title">Current Traffic</span>
                   <canvas id="line-chart" width="800" height="450"></canvas>
-                </div>
+              </div>
+              <div style="padding-left: 100px; padding-right: 100px;">
+                  <label>Select Region</label>
+                  <select class="browser-default" id="reg" onchange="createLineChart()">
+                    <option value="" disabled selected>Chicago Loop</option>
+                    {% for name in names %}
+                        <option>{{name}}</option>
+                     {% endfor %}
+                  </select>
+              </div>
+
               </div>
             </div>
             <div class="col s12">
@@ -66,8 +76,6 @@
 
 data = JSON.parse('{{ regions | tojson | safe}}');
 
-console.log(data)
-
 var date = data["West Town-Near West"][1][0].slice(0,10);
 var starttime = data["West Town-Near West"][1][data["West Town-Near West"][1].length - 1].slice(11,19)
 var endtime = data["West Town-Near West"][1][0].slice(11,19)
@@ -78,80 +86,35 @@ times.forEach(function(part, index, array){
     array[index] = part.slice(11,16)
 })
 
-new Chart(document.getElementById("line-chart"), {
-  type: 'line',
-  data: {
-    labels: times,
-    datasets: [{
-        data: data["West Town-Near West"][0].reverse(),
-        label: "West Town-Near West",
-        borderColor: "#3e95cd",
-        fill: false
-      }, {
-        data: data['Midway-Garfield Rdg-Clearing'][0].reverse(),
-        label: 'Midway-Garfield Rdg-Clearing',
-        borderColor: "#626567",
-        fill: false
-      },  {
-        data: data['Dunning-Portage-Belmont Cragn'][0].reverse(),
-        label: 'Dunning-Portage-Belmont Cragn',
-        borderColor: "#7E5109",
-        fill: false
-      }, {
-        data: data['Humboldt-Garfield Prk E/W'][0].reverse(),
-        label: 'Humboldt-Garfield Prk E/W',
-        borderColor: "#186A3B",
-        fill: false
-      }, {
-        data: data['Edge Water-Uptown'][0].reverse(),
-        label: 'Edge Water-Uptown',
-        borderColor: "#0B5345",
-        fill: false
-      }, {
-        data: data['Riverdale-Hegewisch'][0].reverse(),
-        label: 'Riverdale-Hegewisch',
-        borderColor: "#1B4F72",
-        fill: false
-      }, {
-        data: data['Downtown Lakefront'][0].reverse(),
-        label: 'Downtown Lakefront',
-        borderColor: "#512E5F",
-        fill: false
-      }, {
-        data: data['Hyde Park-Kenwood-Woodlawn'][0].reverse(),
-        label: 'Hyde Park-Kenwood-Woodlawn',
-        borderColor: "#641E16",
-        fill: false
-      }, {
-        data: data['Near South-Douglas'][0].reverse(),
-        label: 'Near South-Douglas',
-        borderColor: "#16A085",
-        fill: false
-      }, {
-        data: data['Near North'][0].reverse(),
-        label: 'Near North',
-        borderColor: "#3498DB",
-        fill: false
-      }, {
-        data: data['Near South-Douglas'][0].reverse(),
-        label: 'Near South-Douglas',
-        borderColor: "#8E44AD",
-        fill: false
-      }, {
-        data: data['Lawndale N/S'][0].reverse(),
-        label: 'Lawndale N/S',
-        borderColor: "#E74C3C",
-        fill: false
+function createLineChart(){
+
+    var selector = document.getElementById("reg");
+    var region = selector.options[selector.selectedIndex].text;
+
+    new Chart(document.getElementById("line-chart"), {
+      type: 'line',
+      data: {
+        labels: times,
+        datasets: [{
+            data: data[region][0].reverse(),
+            label: region,
+            borderColor: "#3e95cd",
+            fill: false
+          }
+        ]
+      },
+      options: {
+        title: {
+          display: true,
+          text: 'Last 24 hours ending on ' + date + ' at ' + endtime
+        }
       }
-    ]
-  },
-  options: {
-    title: {
-      display: true,
-      text: 'Speed Averages on ' + date + ' Between ' + starttime + ' and ' + endtime
-    }
-  }
-});
+    });
+}
+
+createLineChart();
+
+
 
 sdata = JSON.parse('{{segments|tojson|safe}}');
 
@@ -188,7 +151,7 @@ new Chart(document.getElementById("bar-chart-horizontal"), {
       legend: { display: false },
       title: {
         display: true,
-        text: 'Histogram of Segments Speeds at ' + sdata['_last_updt'][0]
+        text: 'Histogram of Segments Speeds at ' + sdata['_last_updt'][0].slice(0, 19)
       }
     }
 });

@@ -41,9 +41,12 @@ def dashboard():
     response = urlopen(REGIONS_URL)
     regions = json.loads(response.read())
 
+    names = regions.keys()
+
     return render_template('dashboard.html',
                            regions=regions,
-                           segments=segments
+                           segments=segments,
+                           names=names
                            )
 
 
