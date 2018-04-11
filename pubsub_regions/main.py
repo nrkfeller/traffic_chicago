@@ -82,9 +82,8 @@ def publish_segments_to_pubsub(publisher, topic_path):
             entry['_traffic'] = float(entry['_traffic'])
             entry['_lit_lon'] = float(entry['_lit_lon'])
             entry['_length'] = float(entry['_length'])
-            publisher.publish(
-                topic_path,
-                data=json.dumps(entry))
+            entry['segmentid'] = int(entry['segmentid'])
+            print entry
 
 
 @app.route('/runseg')
